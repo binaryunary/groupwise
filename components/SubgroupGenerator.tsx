@@ -75,29 +75,46 @@ export default function SubgroupGenerator({ members }: SubgroupGeneratorProps) {
             </div>
           </div>
           <div className="grid gap-3">
-            {generatedSubgroups.map((subgroup, index) => (
-              <div
-                key={index}
-                className="card p-4 animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-accent font-medium text-sm">
-                      {index + 1}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-foreground">
-                      Group {index + 1}
+            {generatedSubgroups.map((subgroup, index) => {
+              // Color palette for subgroups with good contrast
+              const colors = [
+                { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
+                { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-200' },
+                { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200' },
+                { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-200' },
+                { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-200' },
+                { bg: 'bg-teal-100', text: 'text-teal-700', border: 'border-teal-200' },
+                { bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-200' },
+                { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200' },
+              ];
+
+              const colorIndex = index % colors.length;
+              const color = colors[colorIndex];
+
+              return (
+                <div
+                  key={index}
+                  className={`card p-4 animate-fade-in border-2 ${color.border} ${color.bg}`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 ${color.bg} border ${color.border} rounded-full flex items-center justify-center flex-shrink-0`}>
+                      <span className={`${color.text} font-bold text-sm`}>
+                        {index + 1}
+                      </span>
                     </div>
-                    <div className="text-muted-foreground">
-                      {subgroup.members.join(' • ')}
+                    <div className="flex-1">
+                      <div className={`font-semibold ${color.text}`}>
+                        Subgroup {index + 1}
+                      </div>
+                      <div className="text-gray-600">
+                        {subgroup.members.join(' • ')}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

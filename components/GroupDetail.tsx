@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Edit3, X } from 'lucide-react';
+import { Plus, Edit3, X, UserPlus } from 'lucide-react';
 import { Group } from '@/lib/types';
 import SubgroupGenerator from './SubgroupGenerator';
 
@@ -103,23 +103,25 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
         </div>
 
         {/* Add Member */}
-        <div className="card p-6 animate-fade-in">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Add New Member</h3>
-          <div className="relative flex items-center border border-border rounded-lg bg-background overflow-hidden min-h-[48px] transition-all duration-200 focus-within:border-primary focus-within:shadow-[0_0_0_3px_var(--focus)]">
-            <input
-              type="text"
-              value={newMemberName}
-              onChange={(e) => setNewMemberName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
-              className="flex-1 px-4 py-3 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground"
-              placeholder="Enter member name..."
-            />
+        <div className="space-y-4 animate-fade-in">
+          <h3 className="text-lg font-semibold text-foreground">Add New Member</h3>
+          <div className="relative flex items-stretch border border-border rounded-lg bg-background overflow-hidden min-h-[60px]">
+            <div className="flex items-center gap-3 flex-1 px-4 py-3">
+              <input
+                type="text"
+                value={newMemberName}
+                onChange={(e) => setNewMemberName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
+                className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground font-medium"
+                placeholder="Enter member name..."
+              />
+            </div>
             <button
               onClick={handleAddMember}
               disabled={!newMemberName.trim()}
-              className="w-[20%] h-full bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center border-l border-border/50"
+              className="w-[15%] bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center border-l border-border/50 rounded-r-lg"
             >
-              <Plus size={18} />
+              <UserPlus size={18} />
             </button>
           </div>
         </div>
