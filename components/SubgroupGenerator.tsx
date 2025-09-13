@@ -7,16 +7,22 @@ import { generateCombinations } from '@/lib/utils';
 
 interface SubgroupGeneratorProps {
   members: string[];
+  onSubgroupsGenerated?: () => void;
 }
 
-export default function SubgroupGenerator({ members }: SubgroupGeneratorProps) {
+export default function SubgroupGenerator({ members, onSubgroupsGenerated }: SubgroupGeneratorProps) {
   const [subgroupSize, setSubgroupSize] = useState(2);
   const [generatedSubgroups, setGeneratedSubgroups] = useState<Subgroup[]>([]);
+  const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
 
   const handleGenerateSubgroups = () => {
     if (members.length >= subgroupSize) {
       const combinations = generateCombinations(members, subgroupSize);
       setGeneratedSubgroups(combinations.map(combo => ({ members: combo })));
+      // Collapse controls after generating subgroups
+      setIsControlsCollapsed(true);
+      // Notify parent component that subgroups were generated
+      onSubgroupsGenerated?.();
     }
   };
 
@@ -36,32 +42,48 @@ export default function SubgroupGenerator({ members }: SubgroupGeneratorProps) {
       {/* Generate Subgroups Controls */}
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Generate Subgroups</h3>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Subgroup size:</label>
-            <select
-              value={subgroupSize}
-              onChange={(e) => setSubgroupSize(Number(e.target.value))}
-              className="input w-full"
-            >
-              {Array.from({ length: members.length - 1 }, (_, i) => i + 2).map(size => (
-                <option key={size} value={size}>
-                  {size} {size === 2 ? 'people (pairs)' : size === 3 ? 'people (triplets)' : 'people'}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button
-            onClick={handleGenerateSubgroups}
-            className="btn bg-accent text-accent-foreground w-full btn-lg"
-          >
-            <Shuffle size={20} />
-            Generate All Combinations
-          </button>
-        </div>
-      </div>
 
-      {/* Generated Subgroups Display */}
+        {!isControlsCollapsed && (
+          <div className="space-y-4 animate-fade-in">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Subgroup size:</label>
+              <select
+                value={subgroupSize}
+                onChange={(e) => setSubgroupSize(Number(e.target.value))}
+                className="input w-full"
+              >
+                {Array.from({ length: members.length - 1 }, (_, i) => i + 2).map(size => (
+                  <option key={size} value={size}>
+                    {size} {size === 2 ? 'people (pairs)' : size === 3 ? 'people (triplets)' : 'people'}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handleGenerateSubgroups}
+              className="btn bg-accent text-accent-foreground w-full btn-lg"
+            >
+              <Shuffle size={20} />
+              Generate All Combinations
+            </button>
+          </div>
+        )}
+
+        {isControlsCollapsed && generatedSubgroups.length > 0 && (
+          <div className="text-center py-2 animate-fade-in">
+            <p className="text-muted-foreground text-sm">
+              Currently showing {subgroupSize}-person subgroups
+            </p>
+            <button
+              onClick={() => setIsControlsCollapsed(false)}
+              className="btn bg-accent text-accent-foreground mt-3"
+            >
+              <Shuffle size={16} />
+              Change Settings
+            </button>
+          </div>
+        )}
+      </div>      {/* Generated Subgroups Display */}
       {generatedSubgroups.length > 0 && (
         <div className="space-y-4 animate-scale-in">
           <div className="flex items-center justify-between">
