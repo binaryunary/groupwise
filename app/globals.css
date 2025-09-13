@@ -256,7 +256,7 @@ body {
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   font-weight: 500;
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   transition: all 0.2s ease;
   cursor: pointer;
   border: none;
@@ -287,7 +287,7 @@ body {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background-color: var(--background);
   color: var(--foreground);
   font-size: 1rem;
