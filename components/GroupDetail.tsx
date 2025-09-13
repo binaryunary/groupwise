@@ -53,88 +53,127 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
+      <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 animate-fade-in">
           <button
             onClick={onBackToGroups}
-            className="text-sm text-muted-foreground"
+            className="btn bg-muted text-foreground px-4 py-2"
           >
             ← Back to Groups
           </button>
           <button
             onClick={startEditing}
-            className="p-2 rounded-lg hover:bg-muted"
+            className="btn bg-muted text-foreground p-3"
           >
-            <Edit3 size={16} />
+            <Edit3 size={18} />
           </button>
         </div>
 
         {/* Group Name */}
-        <div className="mb-6">
+        <div className="mb-6 animate-scale-in">
           {isEditing ? (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={editingGroupName}
-                onChange={(e) => setEditingGroupName(e.target.value)}
-                className="flex-1 p-3 border rounded-lg"
-                placeholder="Group name"
-              />
-              <button
-                onClick={handleRenameGroup}
-                className="px-4 py-3 bg-primary text-primary-foreground rounded-lg"
-              >
-                Save
-              </button>
+            <div className="card p-6 space-y-4">
+              <label className="text-sm font-medium text-foreground">Group Name</label>
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={editingGroupName}
+                  onChange={(e) => setEditingGroupName(e.target.value)}
+                  className="input flex-1"
+                  placeholder="Group name"
+                  autoFocus
+                />
+                <button
+                  onClick={handleRenameGroup}
+                  disabled={!editingGroupName.trim()}
+                  className="btn bg-primary text-primary-foreground px-6"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           ) : (
-            <h1 className="text-2xl font-bold">{group.name}</h1>
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-accent rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                <span className="text-2xl">📋</span>
+              </div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">{group.name}</h1>
+              <p className="text-muted-foreground">Manage your team members</p>
+            </div>
           )}
         </div>
 
         {/* Add Member */}
-        <div className="mb-6">
-          <div className="flex gap-2">
+        <div className="card p-6 animate-fade-in">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Add New Member</h3>
+          <div className="flex gap-3">
             <input
               type="text"
               value={newMemberName}
               onChange={(e) => setNewMemberName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
-              className="flex-1 p-3 border rounded-lg"
-              placeholder="Add member"
+              className="input flex-1"
+              placeholder="Enter member name..."
             />
             <button
               onClick={handleAddMember}
-              className="px-4 py-3 bg-primary text-primary-foreground rounded-lg"
+              disabled={!newMemberName.trim()}
+              className="btn bg-secondary text-secondary-foreground px-6"
             >
-              <Plus size={16} />
+              <Plus size={20} />
             </button>
           </div>
         </div>
 
         {/* Members List */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-3">
-            Members ({group.members.length})
-          </h2>
-          <div className="space-y-2">
-            {group.members.map((member, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 bg-muted rounded-lg"
-              >
-                <span>{member}</span>
-                <button
-                  onClick={() => handleRemoveMember(index)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-foreground">
+              Team Members
+            </h2>
+            <div className="bg-primary/10 px-3 py-1 rounded-full">
+              <span className="text-primary font-medium text-sm">
+                {group.members.length} {group.members.length === 1 ? 'member' : 'members'}
+              </span>
+            </div>
           </div>
+
+          {group.members.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Plus size={24} className="text-muted-foreground" />
+              </div>
+              <p className="text-muted-foreground">No members yet. Add your first team member above!</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {group.members.map((member, index) => (
+                <div
+                  key={index}
+                  className="card p-4 flex items-center justify-between animate-scale-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center">
+                      <span className="text-accent font-medium text-sm">
+                        {member.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="font-medium text-foreground">{member}</span>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveMember(index)}
+                    className="w-8 h-8 rounded-full bg-error/10 text-error hover:bg-error/20 transition-colors flex items-center justify-center"
+                    title="Remove member"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Subgroup Generator */}

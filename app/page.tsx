@@ -40,23 +40,30 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
+      <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">GroupWise</h1>
-          <p className="text-muted-foreground">
-            Generate subgroups from your teams
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="mb-4">
+            <div className="w-16 h-16 bg-primary rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+              <span className="text-2xl">👥</span>
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold mb-3 text-foreground">GroupWise</h1>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            Generate beautiful subgroups from your teams
           </p>
         </div>
 
         {/* Create Group Form */}
-        <div className="mb-6">
+        <div className="animate-scale-in">
           <CreateGroupForm onCreateGroup={handleCreateGroup} />
         </div>
 
         {/* Groups List */}
-        <GroupList groups={groups} onSelectGroup={handleSelectGroup} />
+        <div className="animate-fade-in">
+          <GroupList groups={groups} onSelectGroup={handleSelectGroup} />
+        </div>
       </div>
     </div>
   );
