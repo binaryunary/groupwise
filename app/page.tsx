@@ -44,11 +44,6 @@ export default function Home() {
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="mb-4">
-            <div className="w-16 h-16 bg-primary rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <span className="text-2xl">👥</span>
-            </div>
-          </div>
           <h1 className="text-4xl font-bold mb-3 text-foreground">GroupWise</h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
             Generate beautiful subgroups from your teams

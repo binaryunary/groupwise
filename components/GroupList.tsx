@@ -1,6 +1,5 @@
 'use client';
 
-import { Users } from 'lucide-react';
 import { Group } from '@/lib/types';
 
 interface GroupListProps {
@@ -12,10 +11,7 @@ export default function GroupList({ groups, onSelectGroup }: GroupListProps) {
   if (groups.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4 flex items-center justify-center">
-          <Users size={24} className="text-muted-foreground" />
-        </div>
-        <p className="text-muted-foreground">No groups yet. Create your first group to get started!</p>
+        <p className="text-muted-foreground text-lg">No groups yet. Create your first group to get started!</p>
       </div>
     );
   }
@@ -35,12 +31,9 @@ export default function GroupList({ groups, onSelectGroup }: GroupListProps) {
               <div className="flex-1">
                 <div className="font-semibold text-lg text-foreground mb-1">{group.name}</div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Users size={16} />
-                    <span className="text-sm">
-                      {group.members.length} {group.members.length === 1 ? 'member' : 'members'}
-                    </span>
-                  </div>
+                  <span className="text-sm">
+                    {group.members.length} {group.members.length === 1 ? 'member' : 'members'}
+                  </span>
                   <span className="text-muted-foreground/50">•</span>
                   <span className="text-sm">
                     {group.createdAt.toLocaleDateString()}
