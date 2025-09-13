@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Edit3 } from 'lucide-react';
+import { Plus, Edit3, X } from 'lucide-react';
 import { Group } from '@/lib/types';
 import SubgroupGenerator from './SubgroupGenerator';
 
@@ -54,7 +54,7 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6">
-      <div className="max-w-md mx-auto space-y-6">
+      <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 animate-fade-in">
           <button
@@ -105,24 +105,27 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
         {/* Add Member */}
         <div className="card p-6 animate-fade-in">
           <h3 className="text-lg font-semibold text-foreground mb-4">Add New Member</h3>
-          <div className="flex gap-3">
+          <div className="relative flex items-center border border-border rounded-lg bg-background overflow-hidden min-h-[48px] transition-all duration-200 focus-within:border-primary focus-within:shadow-[0_0_0_3px_var(--focus)]">
             <input
               type="text"
               value={newMemberName}
               onChange={(e) => setNewMemberName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
-              className="input flex-1"
+              className="flex-1 px-4 py-3 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground"
               placeholder="Enter member name..."
             />
             <button
               onClick={handleAddMember}
               disabled={!newMemberName.trim()}
-              className="btn bg-secondary text-secondary-foreground px-6"
+              className="w-[20%] h-full bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center border-l border-border/50"
             >
-              <Plus size={20} />
+              <Plus size={18} />
             </button>
           </div>
         </div>
+
+        {/* Spacer */}
+        <div style={{ height: '40px' }}></div>
 
         {/* Members List */}
         <div className="space-y-4 animate-fade-in">
@@ -149,10 +152,10 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
               {group.members.map((member, index) => (
                 <div
                   key={index}
-                  className="card p-4 flex items-center justify-between animate-scale-in"
+                  className="relative flex items-stretch border border-border rounded-lg bg-background overflow-hidden min-h-[60px] animate-scale-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1 px-4 py-3">
                     <div className="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center">
                       <span className="text-accent font-medium text-sm">
                         {member.charAt(0).toUpperCase()}
@@ -162,16 +165,19 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
                   </div>
                   <button
                     onClick={() => handleRemoveMember(index)}
-                    className="w-8 h-8 rounded-full bg-error/10 text-error hover:bg-error/20 transition-colors flex items-center justify-center"
+                    className="w-[15%] bg-red-500 text-white hover:bg-red-600 transition-all duration-200 flex items-center justify-center border-l border-border/50 rounded-r-lg"
                     title="Remove member"
                   >
-                    ×
+                    <X size={16} strokeWidth={2} />
                   </button>
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Spacer */}
+        <div style={{ height: '40px' }}></div>
 
         {/* Subgroup Generator */}
         <SubgroupGenerator members={group.members} />
