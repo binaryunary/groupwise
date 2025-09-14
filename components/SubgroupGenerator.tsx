@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Shuffle, Users, Clock, RotateCcw } from 'lucide-react';
+import { RotateCcw, Clock } from 'lucide-react';
 import { Subgroup, SubgroupRound } from '@/lib/types';
-import { generateOptimalParallelSubgroups, generateCombinations, generateRoundRobinSubgroups } from '@/lib/utils';
+import { generateRoundRobinSubgroups } from '@/lib/utils';
 
 interface SubgroupGeneratorProps {
   members: string[];
@@ -13,34 +13,16 @@ interface SubgroupGeneratorProps {
 export default function SubgroupGenerator({ members, onSubgroupsGenerated }: SubgroupGeneratorProps) {
   const [subgroupSize, setSubgroupSize] = useState(2);
   const [generatedRounds, setGeneratedRounds] = useState<SubgroupRound[]>([]);
-  const [generationMode, setGenerationMode] = useState<'round-robin' | 'parallel' | 'all-combinations'>('round-robin');
   const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
 
   const handleGenerateSubgroups = () => {
     if (members.length >= subgroupSize) {
-      if (generationMode === 'round-robin') {
-        const rounds = generateRoundRobinSubgroups(members, subgroupSize);
-        const roundsWithNumbers: SubgroupRound[] = rounds.map((round, index) => ({
-          roundNumber: index + 1,
-          subgroups: round.map(groupMembers => ({ members: groupMembers }))
-        }));
-        setGeneratedRounds(roundsWithNumbers);
-      } else if (generationMode === 'parallel') {
-        const rounds = generateOptimalParallelSubgroups(members, subgroupSize);
-        const roundsWithNumbers: SubgroupRound[] = rounds.map((round, index) => ({
-          roundNumber: index + 1,
-          subgroups: round.map(groupMembers => ({ members: groupMembers }))
-        }));
-        setGeneratedRounds(roundsWithNumbers);
-      } else {
-        // All combinations mode (original behavior)
-        const combinations = generateCombinations(members, subgroupSize);
-        const allCombinationsRound: SubgroupRound = {
-          roundNumber: 1,
-          subgroups: combinations.map(combo => ({ members: combo }))
-        };
-        setGeneratedRounds([allCombinationsRound]);
-      }
+      const rounds = generateRoundRobinSubgroups(members, subgroupSize);
+      const roundsWithNumbers: SubgroupRound[] = rounds.map((round, index) => ({
+        roundNumber: index + 1,
+        subgroups: round.map(groupMembers => ({ members: groupMembers }))
+      }));
+      setGeneratedRounds(roundsWithNumbers);
 
       // Collapse controls after generating subgroups
       setIsControlsCollapsed(true);
@@ -53,7 +35,7 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
     return (
       <div className="card p-6 text-center">
         <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4 flex items-center justify-center">
-          <Shuffle size={24} className="text-muted-foreground" />
+          <RotateCcw size={24} className="text-muted-foreground" />
         </div>
         <p className="text-muted-foreground">Add at least 2 members to generate subgroups</p>
       </div>
@@ -70,25 +52,11 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
 
         {!isControlsCollapsed && (
           <div className="p-4 space-y-4 animate-fade-in">
-            <div className="space-y-2">
-              <label className="footnote text-muted-foreground">Generation mode:</label>
-              <select
-                value={generationMode}
-                onChange={(e) => setGenerationMode(e.target.value as 'round-robin' | 'parallel' | 'all-combinations')}
-                className="input w-full"
-              >
-                <option value="round-robin">Round Robin (Everyone pairs with everyone)</option>
-                <option value="parallel">Parallel Groups (Non-overlapping)</option>
-                <option value="all-combinations">All Possible Combinations</option>
-              </select>
-              {generationMode === 'round-robin' && (
-                <div className="bg-accent/5 border border-accent/20 rounded-lg p-3">
-                  <p className="footnote text-accent">
-                    ✨ Round Robin ensures every member eventually pairs with every other member across multiple rounds.
-                    {subgroupSize === 2 ? ' Perfect for team building and networking!' : ' Minimizes repeat pairings in larger groups.'}
-                  </p>
-                </div>
-              )}
+            <div className="bg-accent/5 border border-accent/20 rounded-lg p-3">
+              <p className="footnote text-accent">
+                ✨ Round Robin ensures every member eventually pairs with every other member across multiple rounds.
+                {subgroupSize === 2 ? ' Perfect for team building and networking!' : ' Minimizes repeat pairings in larger groups.'}
+              </p>
             </div>
             <div className="space-y-2">
               <label className="footnote text-muted-foreground">Subgroup size:</label>
@@ -108,10 +76,8 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
               onClick={handleGenerateSubgroups}
               className="btn btn-primary w-full"
             >
-              {generationMode === 'round-robin' ? <RotateCcw size={20} /> :
-               generationMode === 'parallel' ? <Users size={20} /> : <Shuffle size={20} />}
-              {generationMode === 'round-robin' ? 'Generate Round Robin' :
-               generationMode === 'parallel' ? 'Generate Parallel Groups' : 'Generate All Combinations'}
+              <RotateCcw size={20} />
+              Generate Round Robin
             </button>
           </div>
         )}
@@ -120,19 +86,14 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
           <div className="list-item animate-fade-in">
             <div className="flex-1">
               <p className="subhead text-muted-foreground">
-                {generationMode === 'round-robin'
-                  ? `Round Robin: ${generatedRounds.length} round${generatedRounds.length !== 1 ? 's' : ''} of ${subgroupSize}-person groups`
-                  : generationMode === 'parallel'
-                  ? `${generatedRounds.length} round${generatedRounds.length !== 1 ? 's' : ''} of ${subgroupSize}-person groups`
-                  : `All ${subgroupSize}-person combinations`
-                }
+                Round Robin: {generatedRounds.length} round{generatedRounds.length !== 1 ? 's' : ''} of {subgroupSize}-person groups
               </p>
             </div>
             <button
               onClick={() => setIsControlsCollapsed(false)}
               className="btn btn-secondary ml-3"
             >
-              <Shuffle size={16} />
+              <RotateCcw size={16} />
               Change Settings
             </button>
           </div>
@@ -146,26 +107,18 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
             <div key={roundIndex} className="space-y-4">
               <div className="flex items-center justify-between px-4">
                 <h2 className="title-2 text-foreground">
-                  {generationMode === 'round-robin' && generatedRounds.length > 1
+                  {generatedRounds.length > 1
                     ? `Round ${round.roundNumber}`
-                    : generationMode === 'round-robin'
-                      ? 'Round Robin Schedule'
-                    : generationMode === 'parallel' && generatedRounds.length > 1
-                    ? `Round ${round.roundNumber}`
-                    : generationMode === 'parallel'
-                      ? 'Parallel Groups'
-                      : 'All Combinations'
+                    : 'Round Robin Schedule'
                   }
                 </h2>
                 <div className="flex items-center gap-2">
-                  {(generationMode === 'round-robin' || generationMode === 'parallel') && (
-                    <div className="bg-accent/10 px-3 py-1 rounded-full">
-                      <span className="footnote text-accent font-medium flex items-center gap-1">
-                        <Clock size={12} />
-                        {generationMode === 'round-robin' ? 'Complete Coverage' : 'Simultaneous'}
-                      </span>
-                    </div>
-                  )}
+                  <div className="bg-accent/10 px-3 py-1 rounded-full">
+                    <span className="footnote text-accent font-medium flex items-center gap-1">
+                      <Clock size={12} />
+                      Complete Coverage
+                    </span>
+                  </div>
                   <div className="bg-primary/10 px-3 py-1 rounded-full">
                     <span className="footnote text-primary font-medium">
                       {round.subgroups.length} group{round.subgroups.length !== 1 ? 's' : ''}
