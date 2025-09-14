@@ -11,13 +11,12 @@ interface SubgroupGeneratorProps {
 }
 
 export default function SubgroupGenerator({ members, onSubgroupsGenerated }: SubgroupGeneratorProps) {
-  const [subgroupSize, setSubgroupSize] = useState(2);
   const [generatedRounds, setGeneratedRounds] = useState<SubgroupRound[]>([]);
   const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
 
   const handleGenerateSubgroups = () => {
-    if (members.length >= subgroupSize) {
-      const rounds = generateRoundRobinSubgroups(members, subgroupSize);
+    if (members.length >= 2) {
+      const rounds = generateRoundRobinSubgroups(members, 2);
       const roundsWithNumbers: SubgroupRound[] = rounds.map((round, index) => ({
         roundNumber: index + 1,
         subgroups: round.map(groupMembers => ({ members: groupMembers }))
@@ -54,30 +53,15 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
           <div className="p-4 space-y-4 animate-fade-in">
             <div className="bg-accent/5 border border-accent/20 rounded-lg p-3">
               <p className="footnote text-accent">
-                ✨ Round Robin ensures every member eventually pairs with every other member across multiple rounds.
-                {subgroupSize === 2 ? ' Perfect for team building and networking!' : ' Minimizes repeat pairings in larger groups.'}
+                ✨ Round Robin ensures every member pairs with every other member exactly once across multiple rounds. Perfect for team building and networking!
               </p>
-            </div>
-            <div className="space-y-2">
-              <label className="footnote text-muted-foreground">Subgroup size:</label>
-              <select
-                value={subgroupSize}
-                onChange={(e) => setSubgroupSize(Number(e.target.value))}
-                className="input w-full"
-              >
-                {Array.from({ length: members.length - 1 }, (_, i) => i + 2).map(size => (
-                  <option key={size} value={size}>
-                    {size} {size === 2 ? 'people (pairs)' : size === 3 ? 'people (triplets)' : 'people'}
-                  </option>
-                ))}
-              </select>
             </div>
             <button
               onClick={handleGenerateSubgroups}
               className="btn btn-primary w-full"
             >
               <RotateCcw size={20} />
-              Generate Round Robin
+              Generate Pairwise Round Robin
             </button>
           </div>
         )}
@@ -86,7 +70,7 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
           <div className="list-item animate-fade-in">
             <div className="flex-1">
               <p className="subhead text-muted-foreground">
-                Round Robin: {generatedRounds.length} round{generatedRounds.length !== 1 ? 's' : ''} of {subgroupSize}-person groups
+                Pairwise Round Robin: {generatedRounds.length} round{generatedRounds.length !== 1 ? 's' : ''} of pairs
               </p>
             </div>
             <button
@@ -94,7 +78,7 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
               className="btn btn-secondary ml-3"
             >
               <RotateCcw size={16} />
-              Change Settings
+              Generate Again
             </button>
           </div>
         )}
