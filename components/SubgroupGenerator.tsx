@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Shuffle } from 'lucide-react';
-import { Subgroup } from '@/lib/types';
-import { generateCombinations } from '@/lib/utils';
+import { Shuffle, Users, Clock, RotateCcw } from 'lucide-react';
+import { Subgroup, SubgroupRound } from '@/lib/types';
+import { generateOptimalParallelSubgroups, generateCombinations, generateRoundRobinSubgroups } from '@/lib/utils';
 
 interface SubgroupGeneratorProps {
   members: string[];
@@ -12,13 +12,36 @@ interface SubgroupGeneratorProps {
 
 export default function SubgroupGenerator({ members, onSubgroupsGenerated }: SubgroupGeneratorProps) {
   const [subgroupSize, setSubgroupSize] = useState(2);
-  const [generatedSubgroups, setGeneratedSubgroups] = useState<Subgroup[]>([]);
+  const [generatedRounds, setGeneratedRounds] = useState<SubgroupRound[]>([]);
+  const [generationMode, setGenerationMode] = useState<'round-robin' | 'parallel' | 'all-combinations'>('round-robin');
   const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
 
   const handleGenerateSubgroups = () => {
     if (members.length >= subgroupSize) {
-      const combinations = generateCombinations(members, subgroupSize);
-      setGeneratedSubgroups(combinations.map(combo => ({ members: combo })));
+      if (generationMode === 'round-robin') {
+        const rounds = generateRoundRobinSubgroups(members, subgroupSize);
+        const roundsWithNumbers: SubgroupRound[] = rounds.map((round, index) => ({
+          roundNumber: index + 1,
+          subgroups: round.map(groupMembers => ({ members: groupMembers }))
+        }));
+        setGeneratedRounds(roundsWithNumbers);
+      } else if (generationMode === 'parallel') {
+        const rounds = generateOptimalParallelSubgroups(members, subgroupSize);
+        const roundsWithNumbers: SubgroupRound[] = rounds.map((round, index) => ({
+          roundNumber: index + 1,
+          subgroups: round.map(groupMembers => ({ members: groupMembers }))
+        }));
+        setGeneratedRounds(roundsWithNumbers);
+      } else {
+        // All combinations mode (original behavior)
+        const combinations = generateCombinations(members, subgroupSize);
+        const allCombinationsRound: SubgroupRound = {
+          roundNumber: 1,
+          subgroups: combinations.map(combo => ({ members: combo }))
+        };
+        setGeneratedRounds([allCombinationsRound]);
+      }
+
       // Collapse controls after generating subgroups
       setIsControlsCollapsed(true);
       // Notify parent component that subgroups were generated
@@ -48,6 +71,26 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
         {!isControlsCollapsed && (
           <div className="p-4 space-y-4 animate-fade-in">
             <div className="space-y-2">
+              <label className="footnote text-muted-foreground">Generation mode:</label>
+              <select
+                value={generationMode}
+                onChange={(e) => setGenerationMode(e.target.value as 'round-robin' | 'parallel' | 'all-combinations')}
+                className="input w-full"
+              >
+                <option value="round-robin">Round Robin (Everyone pairs with everyone)</option>
+                <option value="parallel">Parallel Groups (Non-overlapping)</option>
+                <option value="all-combinations">All Possible Combinations</option>
+              </select>
+              {generationMode === 'round-robin' && (
+                <div className="bg-accent/5 border border-accent/20 rounded-lg p-3">
+                  <p className="footnote text-accent">
+                    ✨ Round Robin ensures every member eventually pairs with every other member across multiple rounds.
+                    {subgroupSize === 2 ? ' Perfect for team building and networking!' : ' Minimizes repeat pairings in larger groups.'}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
               <label className="footnote text-muted-foreground">Subgroup size:</label>
               <select
                 value={subgroupSize}
@@ -65,17 +108,24 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
               onClick={handleGenerateSubgroups}
               className="btn btn-primary w-full"
             >
-              <Shuffle size={20} />
-              Generate All Combinations
+              {generationMode === 'round-robin' ? <RotateCcw size={20} /> :
+               generationMode === 'parallel' ? <Users size={20} /> : <Shuffle size={20} />}
+              {generationMode === 'round-robin' ? 'Generate Round Robin' :
+               generationMode === 'parallel' ? 'Generate Parallel Groups' : 'Generate All Combinations'}
             </button>
           </div>
         )}
 
-        {isControlsCollapsed && generatedSubgroups.length > 0 && (
+        {isControlsCollapsed && generatedRounds.length > 0 && (
           <div className="list-item animate-fade-in">
             <div className="flex-1">
               <p className="subhead text-muted-foreground">
-                Currently showing {subgroupSize}-person subgroups
+                {generationMode === 'round-robin'
+                  ? `Round Robin: ${generatedRounds.length} round${generatedRounds.length !== 1 ? 's' : ''} of ${subgroupSize}-person groups`
+                  : generationMode === 'parallel'
+                  ? `${generatedRounds.length} round${generatedRounds.length !== 1 ? 's' : ''} of ${subgroupSize}-person groups`
+                  : `All ${subgroupSize}-person combinations`
+                }
               </p>
             </div>
             <button
@@ -90,58 +140,81 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
       </div>
 
       {/* Generated Subgroups Display */}
-      {generatedSubgroups.length > 0 && (
-        <div className="space-y-4 animate-scale-in">
-          <div className="flex items-center justify-between px-4">
-            <h2 className="title-2 text-foreground">
-              Generated Subgroups
-            </h2>
-            <div className="bg-accent/10 px-3 py-1 rounded-full">
-              <span className="footnote text-accent font-medium">
-                {generatedSubgroups.length} combinations
-              </span>
-            </div>
-          </div>
-          <div className="list-group">
-            {generatedSubgroups.map((subgroup, index) => {
-              // Color palette for subgroups with good contrast
-              const colors = [
-                { bg: 'bg-blue-100', text: 'text-blue-700', badge: 'bg-blue-500' },
-                { bg: 'bg-purple-100', text: 'text-purple-700', badge: 'bg-purple-500' },
-                { bg: 'bg-green-100', text: 'text-green-700', badge: 'bg-green-500' },
-                { bg: 'bg-orange-100', text: 'text-orange-700', badge: 'bg-orange-500' },
-                { bg: 'bg-pink-100', text: 'text-pink-700', badge: 'bg-pink-500' },
-                { bg: 'bg-teal-100', text: 'text-teal-700', badge: 'bg-teal-500' },
-                { bg: 'bg-indigo-100', text: 'text-indigo-700', badge: 'bg-indigo-500' },
-                { bg: 'bg-red-100', text: 'text-red-700', badge: 'bg-red-500' },
-              ];
-
-              const colorIndex = index % colors.length;
-              const color = colors[colorIndex];
-
-              return (
-                <div
-                  key={index}
-                  className={`list-item ${color.bg} animate-fade-in`}
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className={`w-8 h-8 ${color.badge} rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
-                    <span className="text-white font-bold footnote">
-                      {index + 1}
+      {generatedRounds.length > 0 && (
+        <div className="space-y-6 animate-scale-in">
+          {generatedRounds.map((round, roundIndex) => (
+            <div key={roundIndex} className="space-y-4">
+              <div className="flex items-center justify-between px-4">
+                <h2 className="title-2 text-foreground">
+                  {generationMode === 'round-robin' && generatedRounds.length > 1
+                    ? `Round ${round.roundNumber}`
+                    : generationMode === 'round-robin'
+                      ? 'Round Robin Schedule'
+                    : generationMode === 'parallel' && generatedRounds.length > 1
+                    ? `Round ${round.roundNumber}`
+                    : generationMode === 'parallel'
+                      ? 'Parallel Groups'
+                      : 'All Combinations'
+                  }
+                </h2>
+                <div className="flex items-center gap-2">
+                  {(generationMode === 'round-robin' || generationMode === 'parallel') && (
+                    <div className="bg-accent/10 px-3 py-1 rounded-full">
+                      <span className="footnote text-accent font-medium flex items-center gap-1">
+                        <Clock size={12} />
+                        {generationMode === 'round-robin' ? 'Complete Coverage' : 'Simultaneous'}
+                      </span>
+                    </div>
+                  )}
+                  <div className="bg-primary/10 px-3 py-1 rounded-full">
+                    <span className="footnote text-primary font-medium">
+                      {round.subgroups.length} group{round.subgroups.length !== 1 ? 's' : ''}
                     </span>
                   </div>
-                  <div className="flex-1">
-                    <div className={`body font-medium ${color.text}`}>
-                      Subgroup {index + 1}
-                    </div>
-                    <div className="subhead text-muted-foreground">
-                      {subgroup.members.join(' • ')}
-                    </div>
-                  </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+              <div className="list-group">
+                {round.subgroups.map((subgroup, subgroupIndex) => {
+                  // Color palette for subgroups with good contrast
+                  const colors = [
+                    { bg: 'bg-blue-100', text: 'text-blue-700', badge: 'bg-blue-500' },
+                    { bg: 'bg-purple-100', text: 'text-purple-700', badge: 'bg-purple-500' },
+                    { bg: 'bg-green-100', text: 'text-green-700', badge: 'bg-green-500' },
+                    { bg: 'bg-orange-100', text: 'text-orange-700', badge: 'bg-orange-500' },
+                    { bg: 'bg-pink-100', text: 'text-pink-700', badge: 'bg-pink-500' },
+                    { bg: 'bg-teal-100', text: 'text-teal-700', badge: 'bg-teal-500' },
+                    { bg: 'bg-indigo-100', text: 'text-indigo-700', badge: 'bg-indigo-500' },
+                    { bg: 'bg-red-100', text: 'text-red-700', badge: 'bg-red-500' },
+                  ];
+
+                  const colorIndex = subgroupIndex % colors.length;
+                  const color = colors[colorIndex];
+
+                  return (
+                    <div
+                      key={subgroupIndex}
+                      className={`list-item ${color.bg} animate-fade-in`}
+                      style={{ animationDelay: `${subgroupIndex * 100}ms` }}
+                    >
+                      <div className={`w-8 h-8 ${color.badge} rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
+                        <span className="text-white font-bold footnote">
+                          {subgroupIndex + 1}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <div className={`body font-medium ${color.text}`}>
+                          Group {subgroupIndex + 1}
+                        </div>
+                        <div className="subhead text-muted-foreground">
+                          {subgroup.members.join(' • ')}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

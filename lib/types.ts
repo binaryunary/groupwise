@@ -8,3 +8,8 @@ export interface Group {
 export interface Subgroup {
   members: string[];
 }
+
+export interface SubgroupRound {
+  roundNumber: number;
+  subgroups: Subgroup[];
+}
