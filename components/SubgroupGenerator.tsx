@@ -40,13 +40,15 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Generate Subgroups Controls */}
-      <div className="card p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Generate Subgroups</h3>
+      <div className="card">
+        <div className="list-item border-b border-separator">
+          <h3 className="title-3 text-foreground">Generate Subgroups</h3>
+        </div>
 
         {!isControlsCollapsed && (
-          <div className="space-y-4 animate-fade-in">
+          <div className="p-4 space-y-4 animate-fade-in">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Subgroup size:</label>
+              <label className="footnote text-muted-foreground">Subgroup size:</label>
               <select
                 value={subgroupSize}
                 onChange={(e) => setSubgroupSize(Number(e.target.value))}
@@ -61,7 +63,7 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
             </div>
             <button
               onClick={handleGenerateSubgroups}
-              className="btn bg-accent text-accent-foreground w-full btn-lg"
+              className="btn btn-primary w-full"
             >
               <Shuffle size={20} />
               Generate All Combinations
@@ -70,44 +72,48 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
         )}
 
         {isControlsCollapsed && generatedSubgroups.length > 0 && (
-          <div className="text-center py-2 animate-fade-in">
-            <p className="text-muted-foreground text-sm">
-              Currently showing {subgroupSize}-person subgroups
-            </p>
+          <div className="list-item animate-fade-in">
+            <div className="flex-1">
+              <p className="subhead text-muted-foreground">
+                Currently showing {subgroupSize}-person subgroups
+              </p>
+            </div>
             <button
               onClick={() => setIsControlsCollapsed(false)}
-              className="btn bg-accent text-accent-foreground mt-3"
+              className="btn btn-secondary ml-3"
             >
               <Shuffle size={16} />
               Change Settings
             </button>
           </div>
         )}
-      </div>      {/* Generated Subgroups Display */}
+      </div>
+
+      {/* Generated Subgroups Display */}
       {generatedSubgroups.length > 0 && (
         <div className="space-y-4 animate-scale-in">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">
+          <div className="flex items-center justify-between px-4">
+            <h2 className="title-2 text-foreground">
               Generated Subgroups
             </h2>
             <div className="bg-accent/10 px-3 py-1 rounded-full">
-              <span className="text-accent font-medium text-sm">
+              <span className="footnote text-accent font-medium">
                 {generatedSubgroups.length} combinations
               </span>
             </div>
           </div>
-          <div className="grid gap-3">
+          <div className="list-group">
             {generatedSubgroups.map((subgroup, index) => {
               // Color palette for subgroups with good contrast
               const colors = [
-                { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
-                { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-200' },
-                { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200' },
-                { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-200' },
-                { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-200' },
-                { bg: 'bg-teal-100', text: 'text-teal-700', border: 'border-teal-200' },
-                { bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-200' },
-                { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200' },
+                { bg: 'bg-blue-100', text: 'text-blue-700', badge: 'bg-blue-500' },
+                { bg: 'bg-purple-100', text: 'text-purple-700', badge: 'bg-purple-500' },
+                { bg: 'bg-green-100', text: 'text-green-700', badge: 'bg-green-500' },
+                { bg: 'bg-orange-100', text: 'text-orange-700', badge: 'bg-orange-500' },
+                { bg: 'bg-pink-100', text: 'text-pink-700', badge: 'bg-pink-500' },
+                { bg: 'bg-teal-100', text: 'text-teal-700', badge: 'bg-teal-500' },
+                { bg: 'bg-indigo-100', text: 'text-indigo-700', badge: 'bg-indigo-500' },
+                { bg: 'bg-red-100', text: 'text-red-700', badge: 'bg-red-500' },
               ];
 
               const colorIndex = index % colors.length;
@@ -116,22 +122,20 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
               return (
                 <div
                   key={index}
-                  className={`card p-4 animate-fade-in border-2 ${color.border} ${color.bg}`}
+                  className={`list-item ${color.bg} animate-fade-in`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 ${color.bg} border ${color.border} rounded-full flex items-center justify-center flex-shrink-0`}>
-                      <span className={`${color.text} font-bold text-sm`}>
-                        {index + 1}
-                      </span>
+                  <div className={`w-8 h-8 ${color.badge} rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
+                    <span className="text-white font-bold footnote">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <div className={`body font-medium ${color.text}`}>
+                      Subgroup {index + 1}
                     </div>
-                    <div className="flex-1">
-                      <div className={`font-semibold ${color.text}`}>
-                        Subgroup {index + 1}
-                      </div>
-                      <div className="text-gray-600">
-                        {subgroup.members.join(' • ')}
-                      </div>
+                    <div className="subhead text-muted-foreground">
+                      {subgroup.members.join(' • ')}
                     </div>
                   </div>
                 </div>

@@ -33,34 +33,39 @@ export default function CreateGroupForm({ onCreateGroup }: CreateGroupFormProps)
 
   if (isCreating) {
     return (
-      <div className="card p-6 space-y-4 animate-scale-in">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Group Name</label>
-          <input
-            type="text"
-            value={newGroupName}
-            onChange={(e) => setNewGroupName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleCreateGroup()}
-            className="input"
-            placeholder="Enter a group name..."
-            autoFocus
-          />
+      <div className="card animate-scale-in">
+        <div className="list-item border-b border-separator">
+          <h3 className="title-3 text-foreground">Create New Group</h3>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={handleCreateGroup}
-            disabled={!newGroupName.trim()}
-            className="btn bg-primary text-primary-foreground flex-1 btn-lg"
-          >
-            <Plus size={20} />
-            Create Group
-          </button>
-          <button
-            onClick={handleCancel}
-            className="btn bg-muted text-foreground px-6"
-          >
-            Cancel
-          </button>
+        <div className="p-4 space-y-4">
+          <div className="space-y-2">
+            <label className="footnote text-muted-foreground">Group Name</label>
+            <input
+              type="text"
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCreateGroup()}
+              className="input w-full"
+              placeholder="Enter a group name..."
+              autoFocus
+            />
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={handleCreateGroup}
+              disabled={!newGroupName.trim()}
+              className="btn btn-primary flex-1"
+            >
+              <Plus size={20} />
+              Create Group
+            </button>
+            <button
+              onClick={handleCancel}
+              className="btn btn-secondary"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -69,14 +74,14 @@ export default function CreateGroupForm({ onCreateGroup }: CreateGroupFormProps)
   return (
     <button
       onClick={() => setIsCreating(true)}
-      className="w-full p-6 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 hover:bg-background-secondary transition-all duration-200 group"
+      className="w-full card p-6 flex flex-col items-center justify-center gap-3 transition-all duration-200"
     >
-      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
         <Plus size={24} className="text-primary" />
       </div>
       <div className="text-center">
-        <div className="font-semibold text-foreground text-lg">Create New Group</div>
-        <div className="text-muted-foreground text-sm">Start organizing your team</div>
+        <div className="body font-medium text-foreground">Create New Group</div>
+        <div className="footnote text-muted-foreground">Start organizing your team</div>
       </div>
     </button>
   );

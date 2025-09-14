@@ -1,52 +1,69 @@
 @import "tailwindcss";
 
 :root {
-  /* Pastel Color Scheme */
-  --background: #fefcfb;
-  --background-secondary: #f8f5f4;
-  --foreground: #2d2d2d;
+  /* Native App Color Scheme - iOS/Android inspired */
+  --background: #ffffff;
+  --background-secondary: #f2f2f7;
+  --background-tertiary: #ffffff;
+  --foreground: #1c1c1e;
 
-  /* Pastel Primary Colors */
-  --primary: #a78bfa;
-  --primary-light: #c4b5fd;
-  --primary-dark: #8b5cf6;
+  /* Native Primary Colors */
+  --primary: #007aff;
+  --primary-light: #5ac8fa;
+  --primary-dark: #0051d5;
   --primary-foreground: #ffffff;
 
-  /* Pastel Secondary Colors */
-  --secondary: #fbbf24;
-  --secondary-light: #fcd34d;
-  --secondary-dark: #f59e0b;
-  --secondary-foreground: #1f2937;
+  /* Native Secondary Colors */
+  --secondary: #5856d6;
+  --secondary-light: #af52de;
+  --secondary-dark: #5856d6;
+  --secondary-foreground: #ffffff;
 
-  /* Pastel Accent Colors */
-  --accent: #34d399;
-  --accent-light: #6ee7b7;
-  --accent-dark: #10b981;
-  --accent-foreground: #065f46;
+  /* Native Accent Colors */
+  --accent: #34c759;
+  --accent-light: #30d158;
+  --accent-dark: #28cd41;
+  --accent-foreground: #ffffff;
 
-  /* Soft Neutral Colors */
-  --muted: #f1f5f9;
-  --muted-dark: #e2e8f0;
-  --muted-foreground: #64748b;
-  --muted-foreground-light: #94a3b8;
+  /* Native Neutral Colors */
+  --muted: #f2f2f7;
+  --muted-dark: #e5e5ea;
+  --muted-foreground: #8e8e93;
+  --muted-foreground-light: #aeaeb2;
 
-  /* Border and Dividers */
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
-  --border-dark: #cbd5e1;
+  /* Native Border and Dividers */
+  --border: #d1d1d6;
+  --border-light: #f2f2f7;
+  --border-dark: #c7c7cc;
+  --separator: rgba(60, 60, 67, 0.12);
 
   /* Interactive States */
-  --hover: #f8fafc;
-  --focus: #ddd6fe;
-  --active: #c4b5fd;
+  --hover: rgba(0, 122, 255, 0.04);
+  --focus: rgba(0, 122, 255, 0.1);
+  --active: rgba(0, 122, 255, 0.15);
 
-  /* Semantic Colors */
-  --success: #bbf7d0;
-  --success-foreground: #166534;
-  --warning: #fef3c7;
-  --warning-foreground: #92400e;
-  --error: #fecaca;
-  --error-foreground: #dc2626;
+  /* Semantic Colors - Native style */
+  --success: #34c759;
+  --success-foreground: #ffffff;
+  --warning: #ff9500;
+  --warning-foreground: #ffffff;
+  --error: #ff3b30;
+  --error-foreground: #ffffff;
+
+  /* Native Shadows */
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-large: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* Native Typography Scale */
+  --font-size-caption: 12px;
+  --font-size-footnote: 13px;
+  --font-size-subhead: 15px;
+  --font-size-body: 17px;
+  --font-size-title3: 20px;
+  --font-size-title2: 22px;
+  --font-size-title1: 28px;
+  --font-size-large-title: 34px;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -64,52 +81,54 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Dark Mode Pastel Colors */
-    --background: #0f0f23;
-    --background-secondary: #1a1a2e;
-    --foreground: #eeeef0;
+    /* Dark Mode Native Colors */
+    --background: #000000;
+    --background-secondary: #1c1c1e;
+    --background-tertiary: #2c2c2e;
+    --foreground: #ffffff;
 
     /* Dark Mode Primary Colors */
-    --primary: #8b5cf6;
-    --primary-light: #a78bfa;
-    --primary-dark: #7c3aed;
+    --primary: #0a84ff;
+    --primary-light: #64d2ff;
+    --primary-dark: #0051d5;
     --primary-foreground: #ffffff;
 
     /* Dark Mode Secondary Colors */
-    --secondary: #f59e0b;
-    --secondary-light: #fbbf24;
-    --secondary-dark: #d97706;
+    --secondary: #5e5ce6;
+    --secondary-light: #bf5af2;
+    --secondary-dark: #5856d6;
     --secondary-foreground: #ffffff;
 
     /* Dark Mode Accent Colors */
-    --accent: #10b981;
-    --accent-light: #34d399;
-    --accent-dark: #059669;
+    --accent: #32d74b;
+    --accent-light: #30d158;
+    --accent-dark: #28cd41;
     --accent-foreground: #ffffff;
 
     /* Dark Mode Neutral Colors */
-    --muted: #1e293b;
-    --muted-dark: #0f172a;
-    --muted-foreground: #94a3b8;
-    --muted-foreground-light: #cbd5e1;
+    --muted: #1c1c1e;
+    --muted-dark: #2c2c2e;
+    --muted-foreground: #8e8e93;
+    --muted-foreground-light: #aeaeb2;
 
     /* Dark Mode Borders */
-    --border: #334155;
-    --border-light: #475569;
-    --border-dark: #1e293b;
+    --border: #38383a;
+    --border-light: #2c2c2e;
+    --border-dark: #1c1c1e;
+    --separator: rgba(84, 84, 88, 0.5);
 
     /* Dark Mode Interactive States */
-    --hover: #1e293b;
-    --focus: #3730a3;
-    --active: #4338ca;
+    --hover: rgba(10, 132, 255, 0.04);
+    --focus: rgba(10, 132, 255, 0.1);
+    --active: rgba(10, 132, 255, 0.15);
 
     /* Dark Mode Semantic Colors */
-    --success: #064e3b;
-    --success-foreground: #bbf7d0;
-    --warning: #78350f;
-    --warning-foreground: #fef3c7;
-    --error: #7f1d1d;
-    --error-foreground: #fecaca;
+    --success: #32d74b;
+    --success-foreground: #ffffff;
+    --warning: #ff9f0a;
+    --warning-foreground: #ffffff;
+    --error: #ff453a;
+    --error-foreground: #ffffff;
   }
 }
 
@@ -178,25 +197,191 @@ body {
   background-color: var(--hover);
 }
 
+/* Native App Component Styles */
+
+/* Native Navigation Bar */
+.nav-bar {
+  background: var(--background);
+  border-bottom: 1px solid var(--separator);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+
+/* Native Buttons */
+.btn {
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: var(--muted);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--muted-dark);
+}
+
+.btn-destructive {
+  background: var(--error);
+  color: var(--error-foreground);
+}
+
+.btn-destructive:hover {
+  background: color-mix(in srgb, var(--error) 90%, black);
+}
+
+/* Native List Styles */
+.list-group {
+  background: var(--background);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  margin: 8px 0;
+}
+
+.list-item {
+  background: var(--background);
+  border-bottom: 1px solid var(--separator);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  transition: background-color 0.15s ease;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:active {
+  background: var(--hover);
+}
+
+/* Native Cards */
+.card {
+  background: var(--background);
+  border-radius: 12px;
+  border: 1px solid var(--separator);
+  box-shadow: var(--shadow-light);
+  overflow: hidden;
+}
+
+/* Native Form Elements */
+.input {
+  font-size: var(--font-size-body);
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--foreground);
+  min-height: 44px;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--background);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Native Typography */
+.title-large {
+  font-size: var(--font-size-large-title);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.title-1 {
+  font-size: var(--font-size-title1);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.title-2 {
+  font-size: var(--font-size-title2);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.title-3 {
+  font-size: var(--font-size-title3);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.body {
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.subhead {
+  font-size: var(--font-size-subhead);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.footnote {
+  font-size: var(--font-size-footnote);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.caption {
+  font-size: var(--font-size-caption);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* Legacy styles for backward compatibility */
+.text-foreground {
+  color: var(--foreground);
+}
+
 .text-muted-foreground {
   color: var(--muted-foreground);
 }
 
 .bg-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  box-shadow: var(--shadow);
-}
-
-.bg-primary:hover {
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
-}
-
-.bg-primary:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
+  background: var(--primary);
 }
 
 .text-primary-foreground {
@@ -204,15 +389,7 @@ body {
 }
 
 .bg-secondary {
-  background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
-  box-shadow: var(--shadow);
-}
-
-.bg-secondary:hover {
-  background: linear-gradient(135deg, var(--secondary-light) 0%, var(--secondary) 100%);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
+  background: var(--secondary);
 }
 
 .text-secondary-foreground {
@@ -220,15 +397,23 @@ body {
 }
 
 .bg-accent {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-  box-shadow: var(--shadow);
+  background: var(--accent);
 }
 
-.bg-accent:hover {
-  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
+.text-accent-foreground {
+  color: var(--accent-foreground);
+}
+
+.bg-muted {
+  background: var(--muted);
+}
+
+.bg-background {
+  background: var(--background);
+}
+
+.border-border {
+  border-color: var(--border);
 }
 
 .text-accent-foreground {

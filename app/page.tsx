@@ -40,12 +40,16 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6">
-      <div className="max-w-md mx-auto space-y-6">
+    <div className="min-h-screen bg-background-secondary">
+      {/* Native Navigation Bar */}
+      <div className="nav-bar">
+        <h1 className="title-1 text-foreground">GroupWise</h1>
+      </div>
+
+      <div className="px-4 pb-6">
         {/* Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-4xl font-bold mb-3 text-foreground">GroupWise</h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
+        <div className="text-center py-6 animate-fade-in">
+          <p className="subhead text-muted-foreground">
             Generate beautiful subgroups from your teams
           </p>
         </div>
@@ -54,6 +58,9 @@ export default function Home() {
         <div className="animate-scale-in">
           <CreateGroupForm onCreateGroup={handleCreateGroup} />
         </div>
+
+        {/* Spacer */}
+        <div style={{ height: '24px' }}></div>
 
         {/* Groups List */}
         <div className="animate-fade-in">
