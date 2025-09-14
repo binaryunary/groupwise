@@ -43,14 +43,10 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Generate Subgroups Controls */}
+      {/* Generate Controls */}
       <div className="card">
-        <div className="list-item border-b border-separator">
-          <h3 className="title-3 text-foreground">Generate Subgroups</h3>
-        </div>
-
         {!isControlsCollapsed && (
-          <div className="p-4 space-y-4 animate-fade-in">
+          <div className="p-4 animate-fade-in">
             <button
               onClick={handleGenerateSubgroups}
               className="btn btn-primary w-full"
