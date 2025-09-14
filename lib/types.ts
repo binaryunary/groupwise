@@ -6,10 +6,14 @@ export interface Group {
 }
 
 export interface Subgroup {
+  id: string;
   members: string[];
+  completed: boolean;
 }
 
 export interface SubgroupRound {
+  id: string;
   roundNumber: number;
   subgroups: Subgroup[];
+  completed: boolean;
 }
