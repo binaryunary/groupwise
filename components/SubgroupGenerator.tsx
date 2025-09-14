@@ -51,17 +51,12 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
 
         {!isControlsCollapsed && (
           <div className="p-4 space-y-4 animate-fade-in">
-            <div className="bg-accent/5 border border-accent/20 rounded-lg p-3">
-              <p className="footnote text-accent">
-                ✨ Round Robin ensures every member pairs with every other member exactly once across multiple rounds. Perfect for team building and networking!
-              </p>
-            </div>
             <button
               onClick={handleGenerateSubgroups}
               className="btn btn-primary w-full"
             >
               <RotateCcw size={20} />
-              Generate Pairwise Round Robin
+              Generate Pairs
             </button>
           </div>
         )}
@@ -96,19 +91,6 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
                     : 'Round Robin Schedule'
                   }
                 </h2>
-                <div className="flex items-center gap-2">
-                  <div className="bg-accent/10 px-3 py-1 rounded-full">
-                    <span className="footnote text-accent font-medium flex items-center gap-1">
-                      <Clock size={12} />
-                      Complete Coverage
-                    </span>
-                  </div>
-                  <div className="bg-primary/10 px-3 py-1 rounded-full">
-                    <span className="footnote text-primary font-medium">
-                      {round.subgroups.length} group{round.subgroups.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                </div>
               </div>
               <div className="list-group">
                 {round.subgroups.map((subgroup, subgroupIndex) => {
