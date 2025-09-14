@@ -1,21 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Edit3, X, UserPlus } from 'lucide-react';
+import { Plus, Edit3, X, UserPlus, Trash2 } from 'lucide-react';
 import { Group } from '@/lib/types';
 import SubgroupGenerator from './SubgroupGenerator';
 
 interface GroupDetailProps {
   group: Group;
   onUpdateGroup: (group: Group) => void;
+  onDeleteGroup: (groupId: string) => void;
   onBackToGroups: () => void;
 }
 
-export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: GroupDetailProps) {
+export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBackToGroups }: GroupDetailProps) {
   const [newMemberName, setNewMemberName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingGroupName, setEditingGroupName] = useState('');
   const [areMembersCollapsed, setAreMembersCollapsed] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleAddMember = () => {
     if (newMemberName.trim()) {
@@ -53,6 +55,19 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
     setEditingGroupName(group.name);
   };
 
+  const handleDeleteGroup = () => {
+    onDeleteGroup(group.id);
+    onBackToGroups();
+  };
+
+  const confirmDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+  };
+
   return (
     <div className="min-h-screen bg-background-secondary">
       {/* Native Navigation Bar */}
@@ -63,12 +78,20 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
         >
           ← Groups
         </button>
-        <button
-          onClick={startEditing}
-          className="btn btn-secondary"
-        >
-          <Edit3 size={18} />
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={startEditing}
+            className="btn btn-secondary"
+          >
+            <Edit3 size={18} />
+          </button>
+          <button
+            onClick={confirmDelete}
+            className="btn btn-destructive"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
       </div>
 
       <div className="px-4 pb-6">
@@ -207,6 +230,41 @@ export default function GroupDetail({ group, onUpdateGroup, onBackToGroups }: Gr
           onSubgroupsGenerated={() => setAreMembersCollapsed(true)}
         />
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="card max-w-sm w-full animate-scale-in">
+            <div className="list-item border-b border-separator">
+              <h3 className="title-3 text-foreground">Delete Group</h3>
+            </div>
+            <div className="p-4 space-y-4">
+              <p className="body text-foreground">
+                Are you sure you want to delete "{group.name}"? This action cannot be undone.
+              </p>
+              {group.members.length > 0 && (
+                <p className="footnote text-muted-foreground">
+                  This group contains {group.members.length} member{group.members.length !== 1 ? 's' : ''}.
+                </p>
+              )}
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelDelete}
+                  className="btn btn-secondary flex-1"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteGroup}
+                  className="btn btn-destructive flex-1"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

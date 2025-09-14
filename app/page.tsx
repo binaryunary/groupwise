@@ -8,7 +8,7 @@ import CreateGroupForm from '@/components/CreateGroupForm';
 import GroupDetail from '@/components/GroupDetail';
 
 export default function Home() {
-  const { groups, addGroup, updateGroup } = useLocalStorageGroups();
+  const { groups, addGroup, updateGroup, deleteGroup } = useLocalStorageGroups();
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const handleCreateGroup = (group: Group) => {
@@ -25,6 +25,11 @@ export default function Home() {
     setSelectedGroup(updatedGroup);
   };
 
+  const handleDeleteGroup = (groupId: string) => {
+    deleteGroup(groupId);
+    setSelectedGroup(null);
+  };
+
   const handleBackToGroups = () => {
     setSelectedGroup(null);
   };
@@ -34,6 +39,7 @@ export default function Home() {
       <GroupDetail
         group={selectedGroup}
         onUpdateGroup={handleUpdateGroup}
+        onDeleteGroup={handleDeleteGroup}
         onBackToGroups={handleBackToGroups}
       />
     );
