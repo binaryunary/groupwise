@@ -46,13 +46,13 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background-secondary">
+    <div className="min-h-dvh bg-background-secondary">
       {/* Native Navigation Bar */}
       <div className="nav-bar">
         <h1 className="title-1 text-foreground">GroupWise</h1>
       </div>
 
-      <div className="px-4 pb-6">
+      <div className="px-safe pb-safe">
         {/* Header */}
         <div className="text-center py-6 animate-fade-in">
           <p className="subhead text-muted-foreground">

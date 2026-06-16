@@ -15,13 +15,24 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GroupWise - Generate Subgroups",
   description: "Generate all possible pairs and subgroups from your team members",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "GroupWise",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#000000",
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
 export default function RootLayout({
