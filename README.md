@@ -20,6 +20,33 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Testing
+
+Unit tests (Jest) cover the subgroup-generation logic:
+
+```bash
+npm test
+```
+
+End-to-end / visual tests use [Playwright](https://playwright.dev) and run against
+a simulated **iPhone on WebKit (Safari)** — mobile is the primary target. The dev
+server starts automatically.
+
+```bash
+# One-time: install the WebKit browser
+npx playwright install webkit
+
+npm run test:e2e        # headless run
+npm run test:e2e:ui     # interactive UI mode
+```
+
+The flow spec writes full-page iPhone screenshots to `e2e/__screenshots__/`
+(gitignored). Override the destination to keep separate sets for comparison:
+
+```bash
+SHOTS_DIR=e2e/__screenshots__/after npm run test:e2e
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
