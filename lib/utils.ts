@@ -9,43 +9,34 @@ export function generateRoundRobinSubgroups(members: string[], subgroupSize: num
     throw new Error('Only pairwise round-robin (subgroup size 2) is supported');
   }
 
-  if (members.length < 2) return [];
+  // Each participant is a distinct identity, so duplicate names would otherwise
+  // pair a participant with "themselves" or with the same partner more than once.
+  const players = [...new Set(members)];
 
-  const rounds: string[][][] = [];
-  const players = [...members];
+  if (players.length < 2) return [];
 
-  // If odd number of players, add a "bye" player
+  // Odd number of participants: add a "bye" so every round is a perfect matching.
   if (players.length % 2 === 1) {
     players.push('BYE');
   }
 
-  const numRounds = players.length - 1;
-  const numPairsPerRound = players.length / 2;
+  const numPlayers = players.length;
+  const numRounds = numPlayers - 1;
+  const numPairsPerRound = numPlayers / 2;
+  const rounds: string[][][] = [];
+
+  // Circle method: position 0 stays fixed while the remaining positions rotate.
+  // In every round each player appears in exactly one pair.
+  const positions = players.map((_, index) => index);
 
   for (let round = 0; round < numRounds; round++) {
     const currentRound: string[][] = [];
 
     for (let pair = 0; pair < numPairsPerRound; pair++) {
-      let player1Index: number;
-      let player2Index: number;
+      const player1 = players[positions[pair]];
+      const player2 = players[positions[numPlayers - 1 - pair]];
 
-      if (pair === 0) {
-        // First pair: always includes the first player (fixed position)
-        player1Index = 0;
-        player2Index = players.length - 1 - round;
-      } else {
-        // Other pairs: rotate around the circle
-        player1Index = (pair + round) % (players.length - 1);
-        if (player1Index === 0) player1Index = players.length - 1;
-
-        player2Index = (players.length - 1 - pair + round) % (players.length - 1);
-        if (player2Index === 0) player2Index = players.length - 1;
-      }
-
-      const player1 = players[player1Index];
-      const player2 = players[player2Index];
-
-      // Skip pairs with "BYE" player
+      // Skip pairs with the "BYE" placeholder.
       if (player1 !== 'BYE' && player2 !== 'BYE') {
         currentRound.push([player1, player2]);
       }
@@ -54,6 +45,13 @@ export function generateRoundRobinSubgroups(members: string[], subgroupSize: num
     if (currentRound.length > 0) {
       rounds.push(currentRound);
     }
+
+    // Rotate every position except the fixed one (index 0).
+    const last = positions[numPlayers - 1];
+    for (let i = numPlayers - 1; i > 1; i--) {
+      positions[i] = positions[i - 1];
+    }
+    positions[1] = last;
   }
 
   return rounds;

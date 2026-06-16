@@ -81,4 +81,69 @@ describe('generateRoundRobinSubgroups', () => {
       expect(pairSet.size).toBe(15);
     });
   });
+
+  describe('Round Robin Invariants', () => {
+    // Every participant must be paired with every other participant exactly
+    // once, never with themselves, and never twice within the same round.
+    const sizes = [2, 3, 4, 5, 6, 7, 8, 9, 12, 15, 16, 23, 30];
+
+    test.each(sizes)('produces a valid schedule for %i members', (n) => {
+      const members = Array.from({ length: n }, (_, i) => `P${i}`);
+      const result = generateRoundRobinSubgroups(members, 2);
+
+      const seenPairs = new Map<string, number>();
+
+      result.forEach(round => {
+        const seenInRound = new Set<string>();
+        round.forEach(([a, b]) => {
+          // Never paired with themselves.
+          expect(a).not.toBe(b);
+
+          // Each participant appears at most once per round.
+          expect(seenInRound.has(a)).toBe(false);
+          expect(seenInRound.has(b)).toBe(false);
+          seenInRound.add(a);
+          seenInRound.add(b);
+
+          const key = [a, b].sort().join('-');
+          seenPairs.set(key, (seenPairs.get(key) ?? 0) + 1);
+        });
+
+        // For an even number of participants everyone plays every round.
+        if (n % 2 === 0) {
+          expect(seenInRound.size).toBe(n);
+        }
+      });
+
+      // Every pair occurs exactly once.
+      seenPairs.forEach(count => expect(count).toBe(1));
+
+      // The schedule is complete: C(n, 2) unique pairs.
+      expect(seenPairs.size).toBe((n * (n - 1)) / 2);
+    });
+  });
+
+  describe('Duplicate participants', () => {
+    test('never pairs a duplicated name with itself', () => {
+      const result = generateRoundRobinSubgroups(['Alice', 'Bob', 'Alice', 'Charlie'], 2);
+      const allPairs = result.flat();
+
+      allPairs.forEach(([a, b]) => expect(a).not.toBe(b));
+    });
+
+    test('treats duplicate names as a single participant', () => {
+      const result = generateRoundRobinSubgroups(['Alice', 'Bob', 'Alice', 'Charlie'], 2);
+      const pairings = new Set<string>();
+
+      result.flat().forEach(pair => {
+        const sorted = [...pair].sort().join('-');
+        // No pairing occurs more than once.
+        expect(pairings.has(sorted)).toBe(false);
+        pairings.add(sorted);
+      });
+
+      // Unique participants are Alice, Bob, Charlie -> C(3,2) = 3 pairs.
+      expect(pairings.size).toBe(3);
+    });
+  });
 });

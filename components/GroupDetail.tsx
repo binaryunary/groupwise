@@ -14,20 +14,33 @@ interface GroupDetailProps {
 
 export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBackToGroups }: GroupDetailProps) {
   const [newMemberName, setNewMemberName] = useState('');
+  const [memberError, setMemberError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingGroupName, setEditingGroupName] = useState('');
   const [areMembersCollapsed, setAreMembersCollapsed] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleAddMember = () => {
-    if (newMemberName.trim()) {
-      const updatedGroup = {
-        ...group,
-        members: [...group.members, newMemberName.trim()]
-      };
-      onUpdateGroup(updatedGroup);
-      setNewMemberName('');
+    const trimmedName = newMemberName.trim();
+    if (!trimmedName) {
+      return;
     }
+
+    const isDuplicate = group.members.some(
+      member => member.toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (isDuplicate) {
+      setMemberError(`"${trimmedName}" is already a member.`);
+      return;
+    }
+
+    const updatedGroup = {
+      ...group,
+      members: [...group.members, trimmedName]
+    };
+    onUpdateGroup(updatedGroup);
+    setNewMemberName('');
+    setMemberError('');
   };
 
   const handleRemoveMember = (index: number) => {
@@ -135,7 +148,10 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
                 <input
                   type="text"
                   value={newMemberName}
-                  onChange={(e) => setNewMemberName(e.target.value)}
+                  onChange={(e) => {
+                    setNewMemberName(e.target.value);
+                    if (memberError) setMemberError('');
+                  }}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
                   className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground body"
                   placeholder="Enter member name..."
@@ -150,6 +166,11 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
                 </button>
               </div>
             </div>
+            {memberError && (
+              <p className="subhead text-red-600 px-4" role="alert">
+                {memberError}
+              </p>
+            )}
           </div>
         )}
 
