@@ -47,6 +47,9 @@ export default function CreateGroupForm({ onCreateGroup }: CreateGroupFormProps)
               onKeyDown={(e) => e.key === 'Enter' && handleCreateGroup()}
               className="input w-full"
               placeholder="Enter a group name..."
+              autoCapitalize="words"
+              autoComplete="off"
+              enterKeyHint="done"
               autoFocus
             />
           </div>
@@ -74,7 +77,7 @@ export default function CreateGroupForm({ onCreateGroup }: CreateGroupFormProps)
   return (
     <button
       onClick={() => setIsCreating(true)}
-      className="w-full card p-6 flex flex-col items-center justify-center gap-3 transition-all duration-200"
+      className="w-full card card-interactive p-6 flex flex-col items-center justify-center gap-3"
     >
       <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
         <Plus size={24} className="text-primary" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus, Edit3, X, UserPlus, Trash2 } from 'lucide-react';
 import { Group } from '@/lib/types';
 import SubgroupGenerator from './SubgroupGenerator';
@@ -19,6 +19,17 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
   const [editingGroupName, setEditingGroupName] = useState('');
   const [areMembersCollapsed, setAreMembersCollapsed] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const memberInputRef = useRef<HTMLInputElement>(null);
+
+  // Lock background scrolling while the delete dialog is open.
+  useEffect(() => {
+    if (!showDeleteConfirm) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [showDeleteConfirm]);
 
   const handleAddMember = () => {
     const trimmedName = newMemberName.trim();
@@ -41,6 +52,8 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
     onUpdateGroup(updatedGroup);
     setNewMemberName('');
     setMemberError('');
+    // Keep focus so the on-screen keyboard stays up for rapid entry.
+    memberInputRef.current?.focus();
   };
 
   const handleRemoveMember = (index: number) => {
@@ -82,7 +95,7 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
   };
 
   return (
-    <div className="min-h-screen bg-background-secondary">
+    <div className="min-h-dvh bg-background-secondary">
       {/* Native Navigation Bar */}
       <div className="nav-bar">
         <button
@@ -107,7 +120,7 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
         </div>
       </div>
 
-      <div className="px-4 pb-6">
+      <div className="px-safe pb-safe">
         {/* Group Name Section */}
         <div className="py-6">
           {isEditing ? (
@@ -118,8 +131,12 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
                   type="text"
                   value={editingGroupName}
                   onChange={(e) => setEditingGroupName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRenameGroup()}
                   className="input flex-1"
                   placeholder="Group name"
+                  autoCapitalize="words"
+                  autoComplete="off"
+                  enterKeyHint="done"
                   autoFocus
                 />
                 <button
@@ -146,6 +163,7 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
             <div className="card">
               <div className="list-item">
                 <input
+                  ref={memberInputRef}
                   type="text"
                   value={newMemberName}
                   onChange={(e) => {
@@ -155,14 +173,19 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
                   onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
                   className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground body"
                   placeholder="Enter member name..."
+                  autoCapitalize="words"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  enterKeyHint="done"
                 />
                 <button
                   onClick={handleAddMember}
                   disabled={!newMemberName.trim()}
                   className="btn btn-primary ml-3"
-                  style={{ minHeight: '36px', padding: '8px 12px' }}
+                  aria-label="Add member"
                 >
-                  <UserPlus size={16} />
+                  <UserPlus size={18} />
                 </button>
               </div>
             </div>
@@ -209,10 +232,10 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
                     <button
                       onClick={() => handleRemoveMember(index)}
                       className="btn btn-destructive ml-3"
-                      style={{ minHeight: '36px', padding: '8px 12px' }}
                       title="Remove member"
+                      aria-label={`Remove ${member}`}
                     >
-                      <X size={16} />
+                      <X size={18} />
                     </button>
                   </div>
                 ))}
@@ -254,7 +277,7 @@ export default function GroupDetail({ group, onUpdateGroup, onDeleteGroup, onBac
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="card max-w-sm w-full animate-scale-in">
             <div className="list-item border-b border-separator">
               <h3 className="title-3 text-foreground">Delete Group</h3>

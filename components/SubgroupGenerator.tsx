@@ -199,6 +199,7 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
                   type="number"
                   min={1}
                   max={maxRounds}
+                  inputMode="numeric"
                   value={numRounds}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
