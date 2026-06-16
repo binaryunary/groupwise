@@ -1,44 +1,81 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { RotateCcw, Clock, Check, ChevronDown, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { RotateCcw, Check, ChevronDown, ChevronRight, Minus, Plus } from 'lucide-react';
 import { Subgroup, SubgroupRound } from '@/lib/types';
-import { generateRoundRobinSubgroups } from '@/lib/utils';
+import { generateRotationRounds, splitIntoGroups } from '@/lib/utils';
 
 interface SubgroupGeneratorProps {
   members: string[];
   onSubgroupsGenerated?: () => void;
 }
 
+type GenerationMode = 'rotation' | 'split';
+
 export default function SubgroupGenerator({ members, onSubgroupsGenerated }: SubgroupGeneratorProps) {
   const [generatedRounds, setGeneratedRounds] = useState<SubgroupRound[]>([]);
   const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
   const [collapsedRounds, setCollapsedRounds] = useState<Set<string>>(new Set());
 
+  // Generation options (transient — not persisted).
+  const [mode, setMode] = useState<GenerationMode>('rotation');
+  const [groupSize, setGroupSize] = useState(2);
+  const [numRounds, setNumRounds] = useState(1);
+  // Mode/size the displayed results were generated with, for accurate labels.
+  const [lastConfig, setLastConfig] = useState<{ mode: GenerationMode; groupSize: number } | null>(null);
+
+  // Duplicate names count as a single participant, matching the generators.
+  const memberCount = useMemo(() => new Set(members).size, [members]);
+  const maxGroupSize = Math.max(2, memberCount);
+  // For pairs the schedule can't exceed n-1 rounds without repeating; larger
+  // groups may run longer, so allow a generous cap.
+  const maxRounds = groupSize === 2 ? Math.max(1, memberCount - 1) : Math.max(1, memberCount * 2);
+  // Rounds needed for everyone to meet everyone once (n-1 for pairs).
+  const defaultRounds = (size: number) => Math.max(1, Math.ceil((memberCount - 1) / Math.max(1, size - 1)));
+
+  // Keep the options valid as members are added/removed.
+  useEffect(() => {
+    setGroupSize(prev => Math.min(Math.max(2, prev), maxGroupSize));
+  }, [maxGroupSize]);
+
+  useEffect(() => {
+    setNumRounds(defaultRounds(groupSize));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupSize, memberCount]);
+
   // Generate unique ID
   const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
-  const handleGenerateSubgroups = () => {
-    if (members.length >= 2) {
-      const rounds = generateRoundRobinSubgroups(members, 2);
-      const roundsWithIds: SubgroupRound[] = rounds.map((round, index) => ({
-        id: generateId(),
-        roundNumber: index + 1,
-        completed: false,
-        subgroups: round.map(groupMembers => ({
-          id: generateId(),
-          members: groupMembers,
-          completed: false
-        }))
-      }));
-      setGeneratedRounds(roundsWithIds);
-      setCollapsedRounds(new Set());
+  const changeGroupSize = (delta: number) => {
+    setGroupSize(prev => Math.min(maxGroupSize, Math.max(2, prev + delta)));
+  };
 
-      // Collapse controls after generating subgroups
-      setIsControlsCollapsed(true);
-      // Notify parent component that subgroups were generated
-      onSubgroupsGenerated?.();
-    }
+  const handleGenerateSubgroups = () => {
+    if (memberCount < 2) return;
+
+    const rounds =
+      mode === 'split'
+        ? [splitIntoGroups(members, groupSize)]
+        : generateRotationRounds(members, groupSize, Math.min(numRounds, maxRounds));
+
+    const roundsWithIds: SubgroupRound[] = rounds.map((round, index) => ({
+      id: generateId(),
+      roundNumber: index + 1,
+      completed: false,
+      subgroups: round.map(groupMembers => ({
+        id: generateId(),
+        members: groupMembers,
+        completed: false
+      }))
+    }));
+    setGeneratedRounds(roundsWithIds);
+    setLastConfig({ mode, groupSize });
+    setCollapsedRounds(new Set());
+
+    // Collapse controls after generating subgroups
+    setIsControlsCollapsed(true);
+    // Notify parent component that subgroups were generated
+    onSubgroupsGenerated?.();
   };
 
   const toggleSubgroupCompletion = (roundId: string, subgroupId: string) => {
@@ -84,7 +121,7 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
     });
   }, [generatedRounds]);
 
-  if (members.length < 2) {
+  if (memberCount < 2) {
     return (
       <div className="card p-6 text-center">
         <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -100,13 +137,87 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
       {/* Generate Controls */}
       <div className="card">
         {!isControlsCollapsed && (
-          <div className="p-4 animate-fade-in">
+          <div className="p-4 space-y-4 animate-fade-in">
+            {/* Mode */}
+            <div className="space-y-2">
+              <label className="footnote text-muted-foreground">Mode</label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setMode('rotation')}
+                  className={`btn flex-1 ${mode === 'rotation' ? 'btn-primary' : 'btn-secondary'}`}
+                >
+                  Rotation
+                </button>
+                <button
+                  onClick={() => setMode('split')}
+                  className={`btn flex-1 ${mode === 'split' ? 'btn-primary' : 'btn-secondary'}`}
+                >
+                  Single split
+                </button>
+              </div>
+              <p className="caption text-muted-foreground">
+                {mode === 'rotation'
+                  ? 'Several rounds; group-mates rotate so people mix over time.'
+                  : 'One set of groups. Generate again to reshuffle.'}
+              </p>
+            </div>
+
+            {/* Group size */}
+            <div className="space-y-2">
+              <label className="footnote text-muted-foreground">Group size</label>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => changeGroupSize(-1)}
+                  disabled={groupSize <= 2}
+                  className="btn btn-secondary"
+                  aria-label="Decrease group size"
+                >
+                  <Minus size={16} />
+                </button>
+                <span className="body font-medium text-foreground w-8 text-center" aria-live="polite">
+                  {groupSize}
+                </span>
+                <button
+                  onClick={() => changeGroupSize(1)}
+                  disabled={groupSize >= maxGroupSize}
+                  className="btn btn-secondary"
+                  aria-label="Increase group size"
+                >
+                  <Plus size={16} />
+                </button>
+                <span className="footnote text-muted-foreground ml-1">
+                  {groupSize === 2 ? 'pairs' : `groups of ${groupSize}`}
+                </span>
+              </div>
+            </div>
+
+            {/* Rounds (rotation only) */}
+            {mode === 'rotation' && (
+              <div className="space-y-2">
+                <label className="footnote text-muted-foreground">Rounds</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={maxRounds}
+                  value={numRounds}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    setNumRounds(Number.isNaN(value) ? 1 : Math.min(maxRounds, Math.max(1, value)));
+                  }}
+                  className="input w-full"
+                />
+                <p className="caption text-muted-foreground">
+                  Up to {maxRounds} round{maxRounds !== 1 ? 's' : ''} for {memberCount} members.
+                </p>
+              </div>
+            )}
+
             <button
               onClick={handleGenerateSubgroups}
               className="btn btn-primary w-full"
             >
               <RotateCcw size={20} />
-              Generate Pairs
+              {groupSize === 2 ? 'Generate Pairs' : 'Generate Groups'}
             </button>
           </div>
         )}
@@ -115,7 +226,9 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
           <div className="list-item animate-fade-in">
             <div className="flex-1">
               <p className="subhead text-muted-foreground">
-                Pairwise Round Robin: {generatedRounds.length} round{generatedRounds.length !== 1 ? 's' : ''} of pairs
+                {lastConfig?.mode === 'split'
+                  ? `Single split — ${generatedRounds[0].subgroups.length} group${generatedRounds[0].subgroups.length !== 1 ? 's' : ''}`
+                  : `${generatedRounds.length} round${generatedRounds.length !== 1 ? 's' : ''} of ${lastConfig && lastConfig.groupSize === 2 ? 'pairs' : `groups of ${lastConfig?.groupSize}`}`}
               </p>
             </div>
             <button
@@ -145,9 +258,9 @@ export default function SubgroupGenerator({ members, onSubgroupsGenerated }: Sub
                 >
                   <div className="flex items-center space-x-3">
                     <h2 className={`title-2 ${round.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
-                      {generatedRounds.length > 1
-                        ? `Round ${round.roundNumber}`
-                        : 'Round Robin Schedule'
+                      {lastConfig?.mode === 'split'
+                        ? 'Groups'
+                        : `Round ${round.roundNumber}`
                       }
                     </h2>
                     {round.completed && (

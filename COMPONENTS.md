@@ -16,7 +16,7 @@ components/
 
 lib/
 ├── types.ts               # TypeScript interfaces
-├── utils.ts              # Utility functions (combination generation)
+├── utils.ts              # Utility functions (subgroup generation)
 └── useLocalStorageGroups.ts # Custom hook for localStorage operations
 ```
 
@@ -39,9 +39,10 @@ lib/
 - Integrates SubgroupGenerator
 
 ### **SubgroupGenerator**
-- Subgroup size selection
-- Combination generation
-- Results display with numbering
+- Mode selection: multi-round rotation or single split
+- Group size selection (defaults to pairs)
+- Round count selection for rotation mode
+- Subgroup generation and results display with numbering
 
 ## 🪝 Custom Hooks
 
@@ -52,10 +53,19 @@ lib/
 
 ## 🛠️ Utilities
 
-### **generateCombinations**
-- Efficient backtracking algorithm
-- Generates all possible combinations of specified size
-- Handles edge cases (empty arrays, invalid sizes)
+### **generateRoundRobinSubgroups**
+- Circle-method round-robin for pairs (subgroup size 2)
+- Every member pairs with every other member exactly once across rounds
+- Adds a "bye" for an odd number of participants
+
+### **splitIntoGroups**
+- Splits members into a single set of groups of a chosen size
+- Distributes leftovers so groups stay as even as possible (some get one extra)
+
+### **generateRotationRounds**
+- Multi-round rotation for any group size
+- Pairs reuse the perfect round-robin; larger groups use a greedy heuristic that
+  minimizes repeat co-memberships across the requested number of rounds
 
 ## 🎯 Benefits of This Structure
 
